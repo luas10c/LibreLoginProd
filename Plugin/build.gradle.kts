@@ -5,7 +5,7 @@ plugins {
     id("io.github.goooler.shadow") version "8.1.8"
     id("net.kyori.blossom").version("1.3.1")
     id("java-library")
-    id("xyz.kyngs.libby.plugin").version("1.2.1")
+    id("xyz.kyngs.libby.plugin")
 }
 
 tasks.withType<JavaCompile> {
@@ -138,7 +138,7 @@ dependencies {
 
     //Paper
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
-    implementation("com.github.retrooper:packetevents-spigot:2.13.0")
+    implementation("com.github.retrooper:packetevents-spigot:2.14.0")
     compileOnly("org.apache.logging.log4j:log4j-core:2.25.1")
 
     //Libby
