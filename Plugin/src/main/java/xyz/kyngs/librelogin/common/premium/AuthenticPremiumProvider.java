@@ -42,6 +42,8 @@ public class AuthenticPremiumProvider implements PremiumProvider {
         fetchers.add(this::getUserFromMojang);
         fetchers.add(this::getUserFromPlayerDB);
         fetchers.add(this::getUserFromMinetools);
+        fetchers.add(this::getUserFromCrafty);
+        fetchers.add(this::getUserFromSkinRender);
         // fetchers.add(this::getUserFromAshcon); //Momentarily disabled, as it's unreliable. See
         // https://github.com/Electroid/mojang-api/issues/79
     }
@@ -118,6 +120,96 @@ public class AuthenticPremiumProvider implements PremiumProvider {
         return result;
     }
 
+    private PremiumUser getUserFromCrafty(String name) throws PremiumException {
+        try {
+            plugin.reportMainThread();
+
+            var uri =
+                    URI.create(
+                            "https://api.crafty.gg/api/v2/players/"
+                                    + URLEncoder.encode(name, StandardCharsets.UTF_8));
+
+            var connection = (HttpURLConnection) uri.toURL().openConnection();
+
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            switch (connection.getResponseCode()) {
+                case 200 -> {
+                    var data =
+                            AuthenticLibreLogin.GSON.fromJson(
+                                    new InputStreamReader(
+                                            connection.getInputStream(), StandardCharsets.UTF_8),
+                                    JsonObject.class);
+
+                    var uuid = data.getAsJsonObject("data").get("uuid").getAsString();
+                    var username = data.getAsJsonObject("data").get("username").getAsString();
+
+                    return new PremiumUser(
+                            UUID.fromString(uuid), username, username.equalsIgnoreCase(name));
+                }
+                case 404 -> {
+                    return null;
+                }
+                case 429 ->
+                        throw new PremiumException(
+                                PremiumException.Issue.THROTTLED,
+                                GeneralUtil.readInput(connection.getErrorStream()));
+                default ->
+                        throw new PremiumException(
+                                PremiumException.Issue.UNDEFINED,
+                                GeneralUtil.readInput(connection.getErrorStream()));
+            }
+        } catch (IOException e) {
+            throw new PremiumException(PremiumException.Issue.SERVER_EXCEPTION, e);
+        }
+    }
+
+    private PremiumUser getUserFromSkinRender(String name) throws PremiumException {
+        try {
+            plugin.reportMainThread();
+
+            var uri =
+                    URI.create(
+                            "https://skinrender.dev/api/profile/"
+                                    + URLEncoder.encode(name, StandardCharsets.UTF_8));
+
+            var connection = (HttpURLConnection) uri.toURL().openConnection();
+
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            switch (connection.getResponseCode()) {
+                case 200 -> {
+                    var data =
+                            AuthenticLibreLogin.GSON.fromJson(
+                                    new InputStreamReader(
+                                            connection.getInputStream(), StandardCharsets.UTF_8),
+                                    JsonObject.class);
+
+                    var uuid = data.get("uuid").getAsString();
+                    var username = data.get("name").getAsString();
+
+                    return new PremiumUser(
+                            UUID.fromString(uuid), username, username.equalsIgnoreCase(name));
+                }
+                case 404 -> {
+                    return null;
+                }
+                case 429 ->
+                        throw new PremiumException(
+                                PremiumException.Issue.THROTTLED,
+                                GeneralUtil.readInput(connection.getErrorStream()));
+                default ->
+                        throw new PremiumException(
+                                PremiumException.Issue.UNDEFINED,
+                                GeneralUtil.readInput(connection.getErrorStream()));
+            }
+        } catch (IOException e) {
+            throw new PremiumException(PremiumException.Issue.SERVER_EXCEPTION, e);
+        }
+    }
+
     private PremiumUser getUserFromAshcon(String name) throws PremiumException {
         try {
             plugin.reportMainThread();
@@ -182,23 +274,14 @@ public class AuthenticPremiumProvider implements PremiumProvider {
                 case 200 -> {
                     var data =
                             AuthenticLibreLogin.GSON.fromJson(
-                                    new InputStreamReader(connection.getInputStream()),
+                                    new InputStreamReader(
+                                            connection.getInputStream(), StandardCharsets.UTF_8),
                                     JsonObject.class);
 
-                    var id =
-                            data.get("data")
-                                    .getAsJsonObject()
-                                    .get("player")
-                                    .getAsJsonObject()
-                                    .get("id")
-                                    .getAsString();
-                    var username =
-                            data.get("data")
-                                    .getAsJsonObject()
-                                    .get("player")
-                                    .getAsJsonObject()
-                                    .get("username")
-                                    .getAsString();
+                    var player = data.getAsJsonObject("data").getAsJsonObject("player");
+
+                    var id = player.get("id").getAsString();
+                    var username = player.get("username").getAsString();
 
                     return new PremiumUser(
                             UUID.fromString(id), username, username.equalsIgnoreCase(name));
@@ -286,9 +369,10 @@ public class AuthenticPremiumProvider implements PremiumProvider {
         try {
             plugin.reportMainThread();
 
+            // https://api.mojang.com/minecraft/profile/lookup/name/
             var uri =
                     URI.create(
-                            "https://api.minecraftservices.com/minecraft/profile/lookup/name/"
+                            "https://api.mojang.com/users/profiles/minecraft/"
                                     + URLEncoder.encode(name, StandardCharsets.UTF_8));
 
             var connection = (HttpURLConnection) uri.toURL().openConnection();
