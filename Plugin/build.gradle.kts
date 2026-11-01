@@ -2,8 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("java")
-    id("io.github.goooler.shadow") version "8.1.8"
-    id("net.kyori.blossom").version("1.3.1")
+    id("com.gradleup.shadow") version "9.6.1"
     id("java-library")
     id("xyz.kyngs.libby.plugin")
 }
@@ -24,10 +23,6 @@ repositories {
     maven { url = uri("https://jitpack.io/") }
     maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
     maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
-}
-
-blossom {
-    replaceToken("@version@", version)
 }
 
 tasks.withType<ShadowJar> {
@@ -61,7 +56,16 @@ tasks.withType<ShadowJar> {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
+}
+
+tasks.named<JavaCompile>("compileJava") {
+    doLast {
+        val pluginJson = destinationDirectory.file("velocity-plugin.json").get().asFile
+        if (pluginJson.exists()) {
+            pluginJson.writeText(pluginJson.readText().replace("@version@", version.toString()))
+        }
     }
 }
 

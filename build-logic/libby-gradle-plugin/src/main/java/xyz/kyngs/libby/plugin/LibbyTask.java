@@ -47,7 +47,7 @@ public class LibbyTask extends DefaultTask {
         var excludedDependencies = project.getExtensions().getByType(LibbyExtension.class).getExcludedDependencies();
         var noChecksumDependencies = project.getExtensions().getByType(LibbyExtension.class).getNoChecksumDependencies();
 
-        var output = new File(project.getBuildDir().getPath() + "/libby", "libby.json");
+        var output = project.getLayout().getBuildDirectory().file("libby/libby.json").get().getAsFile();
         output.getParentFile().mkdirs();
 
         main.getResources().srcDir(output.getParentFile());

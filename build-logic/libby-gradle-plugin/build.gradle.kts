@@ -24,7 +24,7 @@ repositories {
 
 dependencies {
     implementation("com.grack:nanojson:1.7")
-    compileOnly("com.github.johnrengelman:shadow:8.1.1")
+    compileOnly("com.gradleup.shadow:shadow-gradle-plugin:9.6.1")
 }
 
 gradlePlugin {
@@ -37,8 +37,9 @@ gradlePlugin {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
 tasks.withType<JavaCompile> {
