@@ -140,14 +140,11 @@ public class PaperLibreLogin extends AuthenticLibreLogin<Player, World> {
         }
 
         boolean isBehindProxy;
-        if (getServerVersion().isNewerThanOrEquals(ServerVersion.V_1_21_4))
+        if (getServerVersion().isNewerThanOrEquals(ServerVersion.V_1_21_4)) {
             isBehindProxy = Bukkit.getServer().getServerConfig().isProxyEnabled();
-        else
-            isBehindProxy =
-                    Bukkit.spigot().getSpigotConfig().getBoolean("settings.bungeecord")
-                            || Bukkit.spigot()
-                                    .getPaperConfig()
-                                    .getBoolean("settings.velocity-support.enabled");
+        } else {
+            isBehindProxy = isBehindProxyLegacy();
+        }
 
         if (isBehindProxy) {
             getLogger().error("!!!This server is running under a proxy, LibreLogin won't start!!!");
@@ -255,6 +252,24 @@ public class PaperLibreLogin extends AuthenticLibreLogin<Player, World> {
         bootstrap.disable();
         bootstrap.getServer().shutdown();
         throw new ShutdownException();
+    }
+
+    private boolean isBehindProxyLegacy() {
+        try {
+            var spigotMethod = Bukkit.class.getMethod("spigot");
+            var spigot = spigotMethod.invoke(null);
+            var getSpigotConfig = spigot.getClass().getMethod("getSpigotConfig");
+            var spigotConfig =
+                    (org.bukkit.configuration.ConfigurationSection) getSpigotConfig.invoke(spigot);
+            var getPaperConfig = spigot.getClass().getMethod("getPaperConfig");
+            var paperConfig =
+                    (org.bukkit.configuration.ConfigurationSection) getPaperConfig.invoke(spigot);
+
+            return spigotConfig.getBoolean("settings.bungeecord")
+                    || paperConfig.getBoolean("settings.velocity-support.enabled");
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override

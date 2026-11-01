@@ -77,11 +77,17 @@ public class PaperPlatformHandle implements PlatformHandle<Player, World> {
         if (limbo) {
             world.setSpawnLocation(
                     new Location(world, 0.5, world.getHighestBlockYAt(0, 0) + 1, 0.5));
-            if (getServerVersion().isOlderThan(ServerVersion.V_1_21_9))
-                world.setKeepSpawnInMemory(true);
+            if (getServerVersion().isOlderThan(ServerVersion.V_1_21_9)) {
+                try {
+                    World.class
+                            .getMethod("setKeepSpawnInMemory", boolean.class)
+                            .invoke(world, true);
+                } catch (Exception ignored) {
+                }
+            }
             if (getServerVersion().isOlderThan(ServerVersion.V_1_21_11)) {
-                world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-                world.setGameRule(GameRule.DO_INSOMNIA, false);
+                applyLegacyGameRule(world, "doDaylightCycle");
+                applyLegacyGameRule(world, "doInsomnia");
             } else {
                 world.setGameRule(GameRules.ADVANCE_TIME, false);
                 world.setGameRule(GameRules.SPAWN_PHANTOMS, false);
@@ -89,6 +95,18 @@ public class PaperPlatformHandle implements PlatformHandle<Player, World> {
         }
 
         return world;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void applyLegacyGameRule(World world, String ruleName) {
+        try {
+            var getByNameMethod = GameRule.class.getMethod("getByName", String.class);
+            var rule = (GameRule<Boolean>) getByNameMethod.invoke(null, ruleName);
+            if (rule != null) {
+                world.setGameRule(rule, false);
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     @Override
