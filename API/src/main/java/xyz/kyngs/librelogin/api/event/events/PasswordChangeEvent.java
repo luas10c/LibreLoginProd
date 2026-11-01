@@ -13,6 +13,8 @@ import xyz.kyngs.librelogin.api.event.PlayerBasedEvent;
  * Fires after player has changed their password, their profile is already updated at the moment the
  * event fires
  *
+ * @param <P> The type of the player
+ * @param <S> The type of the server
  * @author kyngs
  */
 public interface PasswordChangeEvent<P, S> extends PlayerBasedEvent<P, S> {

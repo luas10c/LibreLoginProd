@@ -13,6 +13,9 @@ import xyz.kyngs.librelogin.api.event.PlayerBasedEvent;
  * the player's real password. Note, that this event is fired when the player executes the following
  * commands: /login, /changepassword, /premium, /setemail. Use {@link #getSource()} to check the
  * source of the event.
+ *
+ * @param <P> The type of the player
+ * @param <S> The type of the server
  */
 public interface WrongPasswordEvent<P, S> extends PlayerBasedEvent<P, S> {
 

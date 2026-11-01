@@ -7,4 +7,8 @@
 package xyz.kyngs.librelogin.api.event.exception;
 
 /** An exception thrown when an event is cancelled. */
-public class EventCancelledException extends RuntimeException {}
+public class EventCancelledException extends RuntimeException {
+
+    /** Creates a new event cancelled exception. */
+    public EventCancelledException() {}
+}

@@ -9,6 +9,7 @@ package xyz.kyngs.librelogin.api.integration;
 /**
  * This interface provides support for Limbo.
  *
+ * @param <S> The type of the server
  * @author bivashy
  */
 public interface LimboIntegration<S> {

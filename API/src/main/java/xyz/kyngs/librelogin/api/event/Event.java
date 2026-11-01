@@ -12,6 +12,8 @@ import xyz.kyngs.librelogin.api.PlatformHandle;
 /**
  * An abstract event for all events
  *
+ * @param <P> The type of the player
+ * @param <S> The type of the server
  * @author kyngs
  */
 public interface Event<P, S> {

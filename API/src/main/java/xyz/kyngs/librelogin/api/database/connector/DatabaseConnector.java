@@ -27,6 +27,8 @@ public interface DatabaseConnector<E extends Exception, I> {
     void connect() throws E;
 
     /**
+     * Checks whether the database is connected.
+     *
      * @return Whether the database is connected.
      */
     boolean connected();

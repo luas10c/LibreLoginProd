@@ -11,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * An abstract event for events, that require server choosing
  *
+ * @param <P> The type of the player
+ * @param <S> The type of the server
  * @author kyngs
  */
 public interface ServerChooseEvent<P, S> extends PlayerBasedEvent<P, S> {

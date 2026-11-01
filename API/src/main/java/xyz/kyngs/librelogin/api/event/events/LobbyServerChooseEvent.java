@@ -13,6 +13,8 @@ import xyz.kyngs.librelogin.api.event.ServerChooseEvent;
  * Allows you to determine to which server player should be sent after authentication, or after
  * being kicked.
  *
+ * @param <P> The type of the player
+ * @param <S> The type of the server
  * @author kyngs
  * @see ServerChooseEvent#setServer
  */

@@ -13,6 +13,8 @@ import xyz.kyngs.librelogin.api.event.PlayerBasedEvent;
  * #getUser()} should already have the new state However, this event is also called <b>before</b>
  * the user gets saved to the database, so you can override the state.
  *
+ * @param <P> The type of the player
+ * @param <S> The type of the server
  * @author kyngs
  */
 public interface PremiumLoginSwitchEvent<P, S> extends PlayerBasedEvent<P, S> {}

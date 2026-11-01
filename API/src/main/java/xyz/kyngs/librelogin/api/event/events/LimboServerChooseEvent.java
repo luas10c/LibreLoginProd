@@ -11,6 +11,8 @@ import xyz.kyngs.librelogin.api.event.ServerChooseEvent;
 /**
  * Allows you to determine to which limbo player should be sent.
  *
+ * @param <P> The type of the player
+ * @param <S> The type of the server
  * @author kyngs
  * @see ServerChooseEvent#setServer
  */

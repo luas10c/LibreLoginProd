@@ -13,6 +13,8 @@ import xyz.kyngs.librelogin.api.event.PlayerBasedEvent;
  * if the player has authenticated manually, or automatically. Use {@link #getReason()} to check the
  * reason for authentication.
  *
+ * @param <P> The type of the player
+ * @param <S> The type of the server
  * @author kyngs
  */
 public interface AuthenticatedEvent<P, S> extends PlayerBasedEvent<P, S> {
