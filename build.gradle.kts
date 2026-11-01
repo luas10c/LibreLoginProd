@@ -4,7 +4,7 @@ plugins {
 
 defaultTasks("updateLicenses", "shadowJar")
 
-version = "0.26.3"
+version = "0.26.4"
 
 tasks.register("updateLicenses") {
     dependsOn(subprojects.map { it.tasks.named("spotlessApply") })
