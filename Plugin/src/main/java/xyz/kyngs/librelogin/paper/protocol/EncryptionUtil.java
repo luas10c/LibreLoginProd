@@ -6,8 +6,6 @@
 
 package xyz.kyngs.librelogin.paper.protocol;
 
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
 import com.google.common.primitives.Longs;
 import java.io.IOException;
@@ -198,13 +196,14 @@ public final class EncryptionUtil {
 
     private static byte[] getServerIdHash(
             String sessionId, PublicKey publicKey, SecretKey sharedSecret) {
-        @SuppressWarnings("deprecation")
-        Hasher hasher = Hashing.sha1().newHasher();
-
-        hasher.putBytes(sessionId.getBytes(StandardCharsets.ISO_8859_1));
-        hasher.putBytes(sharedSecret.getEncoded());
-        hasher.putBytes(publicKey.getEncoded());
-
-        return hasher.hash().asBytes();
+        try {
+            var digest = MessageDigest.getInstance("SHA-1");
+            digest.update(sessionId.getBytes(StandardCharsets.ISO_8859_1));
+            digest.update(sharedSecret.getEncoded());
+            digest.update(publicKey.getEncoded());
+            return digest.digest();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-1 algorithm not available", e);
+        }
     }
 }
