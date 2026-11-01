@@ -1,5 +1,5 @@
 plugins {
-    id("com.diffplug.spotless") version "7.2.1"
+    id("com.diffplug.spotless") version "8.10.4"
 }
 
 defaultTasks("updateLicenses", "shadowJar")
@@ -46,7 +46,8 @@ subprojects {
 
     spotless {
         java {
-            googleJavaFormat()
+            // Must be >= 1.30.0 to run on JDK 25+ (javac internals changed).
+            googleJavaFormat("1.36.1")
                 .aosp()
                 .reflowLongStrings()
                 .reorderImports(false)
