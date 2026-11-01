@@ -16,7 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import java.io.*;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
@@ -374,9 +374,8 @@ public abstract class AuthenticLibreLogin<P, S> implements LibreLoginPlugin<P, S
         }
     }
 
-    public <C extends DatabaseConnector<?, ?>>
-            DatabaseConnectorRegistration<?, C> getDatabaseConnector(Class<C> clazz) {
-        return (DatabaseConnectorRegistration<?, C>) databaseConnectors.get(clazz);
+    public DatabaseConnectorRegistration<?, ?> getDatabaseConnector(Class<?> clazz) {
+        return databaseConnectors.get(clazz);
     }
 
     private void connectToDB() {
@@ -700,8 +699,9 @@ public abstract class AuthenticLibreLogin<P, S> implements LibreLoginPlugin<P, S
             logger.info("Forbidden passwords list doesn't exist, downloading...");
             try (BufferedInputStream in =
                     new BufferedInputStream(
-                            new URL(
+                            URI.create(
                                             "https://raw.githubusercontent.com/kyngs/LibreLogin/dev/forbidden-passwords.txt")
+                                    .toURL()
                                     .openStream())) {
                 if (!file.createNewFile()) {
                     throw new IOException("Failed to create file");
@@ -737,7 +737,8 @@ public abstract class AuthenticLibreLogin<P, S> implements LibreLoginPlugin<P, S
 
         try {
             var connection =
-                    new URL("https://api.github.com/repos/Navio1430/LibreLoginProd/releases")
+                    URI.create("https://api.github.com/repos/Navio1430/LibreLoginProd/releases")
+                            .toURL()
                             .openConnection();
 
             connection.setRequestProperty("User-Agent", "LibreLogin");
